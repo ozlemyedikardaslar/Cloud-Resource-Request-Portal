@@ -1,0 +1,785 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cloud Resource Request Formu</title>
+<style>
+  :root{
+    --bg:#f3f5f9;
+    --card:#ffffff;
+    --border:#e2e6ee;
+    --text:#1b2230;
+    --text-muted:#616b7d;
+    --primary:#2f5aad;
+    --primary-dark:#1f3d78;
+    --accent:#eef3fc;
+    --tag-azure:#0b6bcb;
+    --tag-azure-bg:#e6f1fd;
+    --tag-pricing:#a15c00;
+    --tag-pricing-bg:#fdf1de;
+    --danger:#c4402f;
+    --radius:10px;
+    --shadow:0 1px 3px rgba(20,30,60,0.06), 0 1px 2px rgba(20,30,60,0.08);
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    background:var(--bg);
+    color:var(--text);
+    line-height:1.4;
+  }
+  header{
+    background:linear-gradient(135deg,var(--primary-dark),var(--primary));
+    color:#fff;
+    padding:28px 32px;
+  }
+  header .eyebrow{
+    font-size:12px;
+    letter-spacing:.14em;
+    text-transform:uppercase;
+    opacity:.8;
+    margin-bottom:6px;
+  }
+  header h1{
+    margin:0 0 4px 0;
+    font-size:26px;
+    font-weight:650;
+  }
+  header .sub{
+    font-size:14px;
+    opacity:.9;
+  }
+  .header-meta{
+    display:flex;
+    gap:28px;
+    margin-top:18px;
+    flex-wrap:wrap;
+  }
+  .header-meta div{
+    background:rgba(255,255,255,.12);
+    border:1px solid rgba(255,255,255,.25);
+    border-radius:8px;
+    padding:8px 14px;
+    font-size:13px;
+  }
+  .header-meta span{
+    display:block;
+    font-size:11px;
+    text-transform:uppercase;
+    letter-spacing:.06em;
+    opacity:.75;
+    margin-bottom:2px;
+  }
+  main{
+    max-width:1080px;
+    margin:0 auto;
+    padding:28px 20px 60px;
+  }
+  .section{
+    background:var(--card);
+    border:1px solid var(--border);
+    border-radius:var(--radius);
+    box-shadow:var(--shadow);
+    margin-bottom:22px;
+    overflow:hidden;
+  }
+  .section > .section-title{
+    background:var(--accent);
+    padding:14px 20px;
+    font-size:15px;
+    font-weight:650;
+    color:var(--primary-dark);
+    border-bottom:1px solid var(--border);
+    display:flex;
+    align-items:center;
+    gap:8px;
+  }
+  .section-title .n{
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    width:22px;height:22px;
+    background:var(--primary);
+    color:#fff;
+    border-radius:50%;
+    font-size:12px;
+    flex:none;
+  }
+  fieldset{
+    border:0;
+    margin:0;
+    padding:18px 20px;
+    border-bottom:1px solid var(--border);
+  }
+  fieldset:last-child{border-bottom:none;}
+  legend{
+    font-size:12.5px;
+    font-weight:650;
+    text-transform:uppercase;
+    letter-spacing:.05em;
+    color:var(--text-muted);
+    padding:0 0 12px 0;
+    width:100%;
+  }
+  .grid{
+    display:grid;
+    grid-template-columns:repeat(2,1fr);
+    gap:14px 22px;
+  }
+  .grid.single{grid-template-columns:1fr;}
+  .field{
+    display:flex;
+    flex-direction:column;
+    gap:5px;
+  }
+  .field.full{grid-column:1 / -1;}
+  label{
+    font-size:13px;
+    font-weight:600;
+    color:var(--text);
+    display:flex;
+    align-items:center;
+    gap:6px;
+  }
+  .tag{
+    font-size:10px;
+    font-weight:650;
+    padding:2px 7px;
+    border-radius:20px;
+    text-transform:uppercase;
+    letter-spacing:.03em;
+  }
+  .tag.azure{color:var(--tag-azure);background:var(--tag-azure-bg);}
+  .tag.pricing{color:var(--tag-pricing);background:var(--tag-pricing-bg);}
+  input[type=text],
+  input[type=number],
+  input[type=date],
+  select,
+  textarea{
+    font-family:inherit;
+    font-size:14px;
+    padding:9px 11px;
+    border:1px solid var(--border);
+    border-radius:8px;
+    background:#fbfcfe;
+    color:var(--text);
+    width:100%;
+    transition:border-color .15s, box-shadow .15s;
+  }
+  input:focus, select:focus, textarea:focus{
+    outline:none;
+    border-color:var(--primary);
+    box-shadow:0 0 0 3px rgba(47,90,173,0.15);
+    background:#fff;
+  }
+  textarea{resize:vertical;min-height:64px;}
+  .hint{
+    font-size:12px;
+    color:var(--text-muted);
+    margin-top:2px;
+  }
+  .choice-row{
+    display:flex;
+    gap:18px;
+    flex-wrap:wrap;
+    padding-top:2px;
+  }
+  .choice-row label{
+    font-weight:500;
+    font-size:13.5px;
+    gap:6px;
+  }
+  .choice-row input{width:auto;accent-color:var(--primary);}
+  .unit-input{position:relative;}
+  .unit-input input{padding-right:44px;}
+  .unit-input span{
+    position:absolute;
+    right:11px;top:50%;
+    transform:translateY(-50%);
+    font-size:12.5px;
+    color:var(--text-muted);
+  }
+  .firewall-table{
+    width:100%;
+    border-collapse:collapse;
+  }
+  .firewall-table th, .firewall-table td{
+    padding:9px 10px;
+    border:1px solid var(--border);
+    font-size:13.5px;
+    text-align:left;
+    vertical-align:middle;
+  }
+  .firewall-table th{
+    background:var(--accent);
+    color:var(--primary-dark);
+    font-size:12px;
+    text-transform:uppercase;
+    letter-spacing:.04em;
+  }
+  .firewall-table input[type=text], .firewall-table input[type=number]{padding:6px 8px;}
+  .actions{
+    display:flex;
+    justify-content:flex-end;
+    gap:12px;
+    margin-top:6px;
+  }
+  button{
+    font-family:inherit;
+    font-size:14px;
+    font-weight:600;
+    padding:11px 22px;
+    border-radius:8px;
+    border:1px solid var(--border);
+    cursor:pointer;
+    background:#fff;
+    color:var(--text);
+  }
+  button.primary{
+    background:var(--primary);
+    border-color:var(--primary);
+    color:#fff;
+  }
+  button.primary:hover{background:var(--primary-dark);}
+  button:hover{background:var(--accent);}
+  @media (max-width:720px){
+    .grid{grid-template-columns:1fr;}
+    header{padding:22px 18px;}
+  }
+  @media print{
+    body{background:#fff;}
+    header{background:var(--primary-dark) !important;-webkit-print-color-adjust:exact;print-color-adjust:exact;}
+    .actions{display:none;}
+    .section{box-shadow:none;break-inside:avoid;}
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="eyebrow">Cloud Resource Request</div>
+  <h1>Bulut Kaynak Talep Formu</h1>
+  <div class="sub">Yeni Azure kaynağı talebi ve mimari değerlendirme formu</div>
+  <div class="header-meta">
+    <div><span>Uygulama / Proje</span>MDM</div>
+    <div><span>İş Birimi</span>Satın Alma</div>
+    <div><span>Talep Tipi</span>Yeni Kaynak</div>
+    <div><span>Hedef Canlı Tarihi</span>14.09.2026</div>
+  </div>
+</header>
+
+<main>
+<form id="cloud-request-form">
+
+  <!-- 1. SOLUTION REQUIREMENTS -->
+  <div class="section">
+    <div class="section-title"><span class="n">1</span>Solution Requirements</div>
+
+    <fieldset>
+      <legend>Genel Bilgiler</legend>
+      <div class="grid">
+        <div class="field">
+          <label for="app_name">Uygulama / Proje Adı</label>
+          <input type="text" id="app_name" value="MDM">
+        </div>
+        <div class="field">
+          <label for="business_unit">İş Birimi</label>
+          <input type="text" id="business_unit" value="Satın Alma">
+        </div>
+        <div class="field">
+          <label for="resource_owner">Kaynak Sahibi</label>
+          <input type="text" id="resource_owner" value="Emir Utku Söyleyen">
+        </div>
+        <div class="field">
+          <label for="tech_owner">Teknik Sorumlu</label>
+          <input type="text" id="tech_owner" value="Emir Utku Söyleyen">
+        </div>
+        <div class="field">
+          <label for="request_type">Talep Tipi</label>
+          <input type="text" id="request_type" value="Yeni Kaynak">
+        </div>
+        <div class="field">
+          <label for="criticality">Kritiklik Seviyesi</label>
+          <select id="criticality">
+            <option>Seçiniz</option>
+            <option>Kritik</option>
+            <option selected>Önemli</option>
+            <option>Orta</option>
+            <option>Düşük</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="go_live">Hedef Canlı Tarihi</label>
+          <input type="text" id="go_live" value="14.09.2026" placeholder="gg.aa.yyyy">
+        </div>
+      </div>
+    </fieldset>
+
+    <fieldset>
+      <legend>Kaynak Bilgileri</legend>
+      <div class="grid">
+        <div class="field">
+          <label for="subscription">Subscription <span class="tag azure">Azure Env</span></label>
+          <select id="subscription"><option>Seçiniz</option></select>
+        </div>
+        <div class="field">
+          <label for="ortam">Ortam</label>
+          <select id="ortam">
+            <option>Seçiniz</option>
+            <option>Dev</option>
+            <option>Test</option>
+            <option>UAT</option>
+            <option selected>Prod</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="resource_group">Resource Group <span class="tag azure">Azure Env</span></label>
+          <select id="resource_group"><option>Seçiniz</option></select>
+        </div>
+        <div class="field">
+          <label for="region">Region <span class="tag azure">Azure Env</span></label>
+          <select id="region"><option>Seçiniz</option></select>
+        </div>
+        <div class="field full">
+          <label for="resource_name">Resource Name</label>
+          <textarea id="resource_name" rows="9">1) sqlmi-mdm-prod-gwc adında bir db sunucusu oluşturulmalı. Bu sunucu altına Vendor adında bir db açılmalı.
+   -> Burada sql3950 altına vendor db'sini açtık denilmişti (@Gökhan İncebey), fakat erişim sağlanamadı. Bilgiler tekrar iletilirse tekrar denenecek.
+
+2) app-mdm-prod-gwc-001 adında ana uygulamanın yayınlanacağı bir App Service tanımlanmalıdır.
+
+3) app-vendor-prod-gwc-001 adında mini uygulamanın yayınlanacağı bir App Service oluşturulmalıdır.
+
+4) app-mdm-api-prod-gwc-001 adında MDM API'lerinin yayınlandığı bir App Service oluşturulmalıdır.
+
+5) app-mdm-vendor-api-prod-gwc-001 adında Vendor API'lerinin yayınlandığı bir App Service oluşturulmalıdır.
+
+6) SAP servislerinin yayınlanabilmesi için app-sapServices-api-prod-gwc-001 adında bir App Service açılmalıdır.</textarea>
+        </div>
+        <div class="field">
+          <label for="app_architecture">Uygulama Mimarisi</label>
+          <input type="text" id="app_architecture" value="Moduler Monolith">
+        </div>
+        <div class="field">
+          <label for="resource_type">Resource Type <span class="tag pricing">Pricing API</span></label>
+          <select id="resource_type">
+            <option>Seçiniz</option>
+            <option selected>App Service + SQL MI</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="db_type">Veritabanı Tipi <span class="tag pricing">Pricing API</span></label>
+          <select id="db_type">
+            <option>Seçiniz</option>
+            <option selected>SQL Server</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="sql_tier">SQL Service Tier <span class="tag pricing">Pricing API</span></label>
+          <select id="sql_tier">
+            <option>Seçiniz</option>
+            <option selected>NA</option>
+          </select>
+        </div>
+      </div>
+    </fieldset>
+
+    <fieldset>
+      <legend>VM Bilgisi ve Kapasitesi</legend>
+      <div class="grid">
+        <div class="field">
+          <label for="os_version">İşletim Sistemi ve Versiyonu <span class="tag pricing">Pricing API</span></label>
+          <select id="os_version"><option>Seçiniz</option></select>
+        </div>
+        <div class="field">
+          <label for="vm_size">VM Boyutu <span class="tag pricing">Pricing API</span></label>
+          <select id="vm_size">
+            <option>Seçiniz</option>
+            <option>B2s (2 vCPU / 4 GB)</option>
+            <option>D2s_v5 (2 vCPU / 8 GB)</option>
+            <option>D4s_v5 (4 vCPU / 16 GB)</option>
+            <option>D8s_v5 (8 vCPU / 32 GB)</option>
+            <option>E4s_v5 (4 vCPU / 32 GB)</option>
+            <option>E8s_v5 (8 vCPU / 64 GB)</option>
+            <option>Diğer - yazınız lütfen</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="disk_tier">Disk Tier (SSD / HDD vb.) <span class="tag pricing">Pricing API</span></label>
+          <select id="disk_tier"><option>Seçiniz</option></select>
+        </div>
+        <div class="field">
+          <label for="os_disk">OS Disk (GB) <span class="tag pricing">Pricing API</span></label>
+          <select id="os_disk"><option>Seçiniz</option></select>
+        </div>
+        <div class="field">
+          <label for="data_disk">Data Disk (GB) <span class="tag pricing">Pricing API</span></label>
+          <select id="data_disk"><option>Seçiniz</option></select>
+        </div>
+        <div class="field">
+          <label for="existing_data">Varsa Mevcut Veri Boyutu</label>
+          <div class="unit-input"><input type="number" id="existing_data" value="10"><span>GB</span></div>
+        </div>
+        <div class="field">
+          <label for="estimated_data">Tahmini Data Boyutu</label>
+          <div class="unit-input"><input type="number" id="estimated_data" value="10"><span>GB</span></div>
+        </div>
+        <div class="field">
+          <label for="data_classification">Veri Sınıflandırması</label>
+          <select id="data_classification">
+            <option>Seçiniz</option>
+            <option>Public</option>
+            <option>Internal</option>
+            <option>Confidential</option>
+            <option>Personal Data (KVKK)</option>
+            <option>Financial</option>
+            <option>Production Critical</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="data_growth">Tahmini Yıllık Veri Büyümesi</label>
+          <div class="unit-input"><input type="number" id="data_growth" value="5"><span>%</span></div>
+        </div>
+      </div>
+    </fieldset>
+  </div>
+
+  <!-- 2. ERİŞİM SINIFLANDIRMASI -->
+  <div class="section">
+    <div class="section-title"><span class="n">2</span>Erişim Sınıflandırması</div>
+    <fieldset>
+      <div class="grid">
+        <div class="field">
+          <label for="env_classification">Environment Classification <span class="tag azure">Azure Env</span></label>
+          <select id="env_classification">
+            <option>Seçiniz</option>
+            <option>Public</option>
+            <option selected>Internal</option>
+            <option>Confidential</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="network_vnet">Network / VNET <span class="tag azure">Azure Env</span></label>
+          <select id="network_vnet"><option>Seçiniz</option></select>
+        </div>
+        <div class="field full">
+          <label for="access_desc">Erişim Açıklaması</label>
+          <input type="text" id="access_desc" value="Eti personeli iç networkten ve VPN ile prod için açılacak adrese erişecek">
+        </div>
+        <div class="field">
+          <label for="public_access">Public Access</label>
+          <select id="public_access">
+            <option>Seçiniz</option>
+            <option>Disabled</option>
+            <option>Selected Networks</option>
+            <option>Enabled</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>Private Endpoint</label>
+          <div class="choice-row">
+            <label><input type="radio" name="private_endpoint" value="Evet"> Evet</label>
+            <label><input type="radio" name="private_endpoint" value="Hayır"> Hayır</label>
+          </div>
+        </div>
+        <div class="field">
+          <label>WAF / Cloudflare İhtiyacı</label>
+          <div class="choice-row">
+            <label><input type="radio" name="waf" value="Evet"> Evet</label>
+            <label><input type="radio" name="waf" value="Hayır"> Hayır</label>
+          </div>
+        </div>
+        <div class="field">
+          <label>VPN / Partner Erişimi</label>
+          <div class="choice-row">
+            <label><input type="radio" name="vpn" value="Evet"> Evet</label>
+            <label><input type="radio" name="vpn" value="Hayır"> Hayır</label>
+          </div>
+        </div>
+        <div class="field">
+          <label>IP Whitelist Gereksinimi</label>
+          <div class="choice-row">
+            <label><input type="radio" name="ip_whitelist" value="Evet"> Evet</label>
+            <label><input type="radio" name="ip_whitelist" value="Hayır"> Hayır</label>
+          </div>
+        </div>
+        <div class="field">
+          <label>SSL Sertifika İhtiyacı</label>
+          <div class="choice-row">
+            <label><input type="radio" name="ssl_cert" value="Evet"> Evet</label>
+            <label><input type="radio" name="ssl_cert" value="Hayır"> Hayır</label>
+          </div>
+        </div>
+      </div>
+    </fieldset>
+  </div>
+
+  <!-- 3. FIREWALL -->
+  <div class="section">
+    <div class="section-title"><span class="n">3</span>Firewall</div>
+    <fieldset>
+      <table class="firewall-table">
+        <thead>
+          <tr>
+            <th>Source (CIDR)</th>
+            <th>Destination (CIDR)</th>
+            <th>Protokol</th>
+            <th>Port</th>
+            <th>Direction</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><input type="text" placeholder="ör. 10.0.0.0/24"></td>
+            <td><input type="text" placeholder="ör. 10.1.0.0/24"></td>
+            <td>
+              <div class="choice-row">
+                <label><input type="checkbox" name="protocol" value="TCP"> TCP</label>
+                <label><input type="checkbox" name="protocol" value="UDP"> UDP</label>
+              </div>
+            </td>
+            <td><input type="number" placeholder="443"></td>
+            <td>
+              <div class="choice-row">
+                <label><input type="checkbox" name="direction" value="Inbound"> Inbound</label>
+                <label><input type="checkbox" name="direction" value="Outbound"> Outbound</label>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </fieldset>
+  </div>
+
+  <!-- 4. KULLANIM PROFİLİ -->
+  <div class="section">
+    <div class="section-title"><span class="n">4</span>Kullanım Profili</div>
+    <fieldset>
+      <div class="grid">
+        <div class="field">
+          <label for="expected_users">Beklenen Kullanıcı Sayısı</label>
+          <input type="number" id="expected_users" value="50">
+        </div>
+        <div class="field">
+          <label for="peak_users">Anlık En Yüksek Kullanıcı Sayısı</label>
+          <input type="number" id="peak_users" value="30">
+        </div>
+        <div class="field">
+          <label for="monthly_tx">Aylık Transaction Sayısı</label>
+          <input type="number" id="monthly_tx" value="1000">
+        </div>
+        <div class="field">
+          <label for="daily_transfer">Günlük Veri Transferi</label>
+          <div class="unit-input"><input type="number" id="daily_transfer" value="10"><span>GB</span></div>
+        </div>
+        <div class="field">
+          <label for="usage_model">Kullanım Modeli</label>
+          <select id="usage_model">
+            <option>Seçiniz</option>
+            <option selected>Sürekli (7x24)</option>
+            <option>İş Saatleri</option>
+            <option>Periyodik / Batch</option>
+          </select>
+        </div>
+      </div>
+    </fieldset>
+  </div>
+
+  <!-- 5. ENTEGRASYON VE İŞ SÜREKLİLİĞİ -->
+  <div class="section">
+    <div class="section-title"><span class="n">5</span>Entegrasyon ve İş Sürekliliği</div>
+    <fieldset>
+      <div class="grid">
+        <div class="field">
+          <label>Active Directory / Entra ID Gereksinimi</label>
+          <div class="choice-row">
+            <label><input type="radio" name="entra_id" value="Evet" checked> Evet</label>
+            <label><input type="radio" name="entra_id" value="Hayır"> Hayır</label>
+          </div>
+        </div>
+        <div class="field">
+          <label>İnternet Erişimi Gerekiyor mu?</label>
+          <div class="choice-row">
+            <label><input type="radio" name="internet_access" value="Evet"> Evet</label>
+            <label><input type="radio" name="internet_access" value="Hayır"> Hayır</label>
+          </div>
+        </div>
+        <div class="field">
+          <label>SAP Entegrasyonu Var mı?</label>
+          <div class="choice-row">
+            <label><input type="radio" name="sap_integration" value="Evet" checked> Evet</label>
+            <label><input type="radio" name="sap_integration" value="Hayır"> Hayır</label>
+          </div>
+        </div>
+        <div class="field">
+          <label for="other_integrations">Diğer Sistem Entegrasyonları</label>
+          <input type="text" id="other_integrations" value="SNERGY, AUTHMAN">
+        </div>
+        <div class="field">
+          <label>HA Gereksinimi</label>
+          <div class="choice-row">
+            <label><input type="radio" name="ha" value="Evet" checked> Evet</label>
+            <label><input type="radio" name="ha" value="Hayır"> Hayır</label>
+          </div>
+        </div>
+        <div class="field">
+          <label>DR Gereksinimi</label>
+          <div class="choice-row">
+            <label><input type="radio" name="dr" value="Evet" checked> Evet</label>
+            <label><input type="radio" name="dr" value="Hayır"> Hayır</label>
+          </div>
+        </div>
+        <div class="field">
+          <label for="log_retention">Log Saklama Süresi</label>
+          <div class="unit-input"><input type="number" id="log_retention" value="365"><span>gün</span></div>
+        </div>
+      </div>
+    </fieldset>
+  </div>
+
+  <!-- 6. OPERASYON VE GÜVENLİK GEREKSİNİMLERİ -->
+  <div class="section">
+    <div class="section-title"><span class="n">6</span>Operasyon ve Güvenlik Gereksinimleri</div>
+    <fieldset>
+      <div class="grid">
+        <div class="field">
+          <label>Backup Gereksinimi</label>
+          <div class="choice-row">
+            <label><input type="radio" name="backup_req" value="Evet"> Evet</label>
+            <label><input type="radio" name="backup_req" value="Hayır"> Hayır</label>
+          </div>
+        </div>
+        <div class="field">
+          <label for="backup_retention">Backup Saklama Süresi</label>
+          <div class="unit-input"><input type="number" id="backup_retention"><span>gün</span></div>
+        </div>
+        <div class="field">
+          <label for="rpo">RPO</label>
+          <div class="unit-input"><input type="number" id="rpo"><span>saat</span></div>
+        </div>
+        <div class="field">
+          <label for="rto">RTO</label>
+          <div class="unit-input"><input type="number" id="rto"><span>saat</span></div>
+        </div>
+        <div class="field">
+          <label>Audit Log Gereksinimi</label>
+          <div class="choice-row">
+            <label><input type="radio" name="audit_log" value="Evet"> Evet</label>
+            <label><input type="radio" name="audit_log" value="Hayır"> Hayır</label>
+          </div>
+        </div>
+        <div class="field">
+          <label for="audit_retention">Audit Log Saklama Süresi</label>
+          <div class="unit-input"><input type="number" id="audit_retention"><span>gün</span></div>
+        </div>
+        <div class="field">
+          <label for="monitoring_level">Monitoring &amp; Alerting Seviyesi</label>
+          <select id="monitoring_level">
+            <option>Seçiniz</option>
+            <option>Basic</option>
+            <option>Standard</option>
+            <option>Advanced</option>
+          </select>
+        </div>
+      </div>
+    </fieldset>
+  </div>
+
+  <!-- 7. YÖNETİLEN HİZMETLER -->
+  <div class="section">
+    <div class="section-title"><span class="n">7</span>Yönetilen Hizmetler</div>
+    <fieldset>
+      <div class="grid">
+        <div class="field">
+          <label>Kapsam İçi</label>
+          <div class="choice-row">
+            <label><input type="radio" name="in_scope" value="Evet"> Evet</label>
+            <label><input type="radio" name="in_scope" value="Hayır"> Hayır</label>
+          </div>
+        </div>
+        <div class="field">
+          <label>İzleme</label>
+          <div class="choice-row">
+            <label><input type="radio" name="monitoring_scope" value="Evet"> Evet</label>
+            <label><input type="radio" name="monitoring_scope" value="Hayır" checked> Hayır</label>
+          </div>
+        </div>
+      </div>
+    </fieldset>
+  </div>
+
+  <!-- 8. CLOUD PLATFORM ASSESSMENT -->
+  <div class="section">
+    <div class="section-title"><span class="n">8</span>Cloud Platform Assessment</div>
+    <fieldset>
+      <legend>Önerilen Çözüm Özeti</legend>
+      <div class="grid">
+        <div class="field">
+          <label for="estimated_service">Tahmini Azure Servisi</label>
+          <input type="text" id="estimated_service" value="App Service + SQL MI">
+        </div>
+        <div class="field">
+          <label for="tshirt_size">T-Shirt Sizing</label>
+          <select id="tshirt_size">
+            <option>Seçiniz</option>
+            <option>S</option>
+            <option>M</option>
+            <option>L</option>
+            <option>XL</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="monthly_cost">Tahmini Aylık Cost</label>
+          <input type="text" id="monthly_cost" placeholder="xxx USD">
+        </div>
+        <div class="field">
+          <label for="impact_level">Etki Seviyesi</label>
+          <select id="impact_level">
+            <option>Seçiniz</option>
+            <option>Low</option>
+            <option>Medium</option>
+            <option>High</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="security_req">Güvenlik Gereksinimi</label>
+          <input type="text" id="security_req" placeholder="ör. WAF / Private Endpoint vb.">
+        </div>
+        <div class="field">
+          <label for="approval_status">Onay Durumu</label>
+          <select id="approval_status">
+            <option>Seçiniz</option>
+            <option>Onaylandı</option>
+            <option>Revizyon</option>
+          </select>
+        </div>
+        <div class="field full">
+          <label for="operational_owner">Operasyonel Sahip</label>
+          <input type="text" id="operational_owner">
+        </div>
+        <div class="field full">
+          <label for="notes">Notlar / Varsayımlar</label>
+          <textarea id="notes" rows="3" placeholder="Örnek: Maliyet hesabı 300 eş zamanlı kullanıcı ve 500 GB DB varsayımıyla yapılmıştır."></textarea>
+        </div>
+      </div>
+    </fieldset>
+  </div>
+
+  <div class="actions">
+    <button type="button" onclick="window.print()">Yazdır / PDF</button>
+    <button type="submit" class="primary">Talebi Gönder</button>
+  </div>
+
+</form>
+</main>
+
+<script>
+document.getElementById('cloud-request-form').addEventListener('submit', function(e){
+  e.preventDefault();
+  alert('Form yerel olarak dolduruldu. Gönderim için bir backend/entegrasyon bağlanmadı.');
+});
+</script>
+
+</body>
+</html>
